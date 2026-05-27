@@ -1,0 +1,49 @@
+# Python
+*/__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.env/
+
+# Environment variables
+.env
+*.env
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media & static (optional depending on setup)
+media/
+staticfiles/
+
+# Migrations (optional - usually you KEEP these)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# IDEs / Editors
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build files
+dist/
+build/
+*.egg-info/
+
+# Secrets
+secret_key.txt
