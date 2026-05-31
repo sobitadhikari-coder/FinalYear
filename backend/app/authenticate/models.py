@@ -59,22 +59,44 @@ class CustomUser(AbstractUser):
     )
 
     objects = CustomUserManager()
-
+    def validate_role(self):
+        if self.role=="admin":
+            self.is_staff = True
+            self.is_superuser = True
+        elif self.role in ["student",]:
+            self.is_superuser = False
+            self.is_staff = False
+        elif self.role == "teacher":
+            self.is_superuser = False
     def save(self, *args, **kwargs):
+
+        # admin always full access
+        if self.role == "admin":
+            self.is_staff = True
+            self.is_superuser = True
+
+        # student can never access admin
+        elif self.role == "student":
+            self.is_staff = False
+            self.is_superuser = False
+
+        # teacher:
+        # allow manual is_staff change from admin panel
+        elif self.role == "teacher":
+            self.is_superuser = False
 
         super().save(*args, **kwargs)
 
-        self.groups.clear()
-
+        # sync group
         group_name = ROLE_GROUP_MAP.get(self.role)
 
         if group_name:
-            group, _ = Group.objects.get_or_create(name=group_name)
-            self.groups.add(group)
-    
 
+            group, _ = Group.objects.get_or_create(
+                name=group_name
+            )
 
-    
+            self.groups.set([group])    
 
 
 #  OTP 
@@ -93,3 +115,5 @@ class PasswordResetOtp(models.Model):
         indexes= [
             models.Index(fields=['user', 'otp']),
         ]
+
+

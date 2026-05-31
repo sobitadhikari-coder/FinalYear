@@ -27,10 +27,9 @@ BASE_URL = env('BASE_URL', default='http://127.0.0.1:8000')
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta()
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,7 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #added apps
-    'app.authenticate',
+    'app.authenticate.apps.AuthenticateConfig',
     'app.student',
     'app.teacher',
     'rest_framework',
@@ -206,3 +205,11 @@ JAZZMIN_SETTINGS = {
     "navigation_expanded": True,
     "changeform_format": "horizontal_tabs",
 }
+
+
+
+# for login attempts control
+AXES_FAILURE_LIMIT=5
+AXES_COOLOFF_TIME=0.01# hours
+AXES_RESET_ON_SUCCESS=True
+##
