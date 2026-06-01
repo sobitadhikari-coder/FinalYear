@@ -1,11 +1,8 @@
 from django.db import models
 from django.conf import settings
-from app.authenticate.models import CustomUser
-from app.teacher.models import Tution
 
 # Create your models here.
 class StudentProfile(models.Model):
-
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -28,7 +25,7 @@ class StudentProfile(models.Model):
     
 class StudentTution(models.Model):
     student = models.ForeignKey(
-        'student.StudentProfile',
+        'StudentProfile',
         on_delete=models.CASCADE,
         related_name='enrollments'
     )
@@ -47,4 +44,4 @@ class StudentTution(models.Model):
     def __str__(self):
         return f"{self.student.user.username} enrolled in {self.tution.subject} - {self.tution.class_name}"
     
-    
+

@@ -14,7 +14,7 @@ class TeacherProfileView(
 ):
 
     serializer_class = TeacherProfileSerializer
-    permission_classes = [IsAuthenticated, IsTeacher, IsTeacher_Verified]
+    permission_classes = [IsAuthenticated, IsTeacher]
 
 
     def get_object(self):
@@ -24,6 +24,7 @@ class TeacherProfileView(
         )
 
 class TeacherListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
 
     serializer_class = TeacherProfileSerializer
 
@@ -50,7 +51,8 @@ class MyTuitionListView(ListAPIView):
     serializer_class = TutionSerializer
     permission_classes = [
         IsAuthenticated,
-        IsTeacher
+        IsTeacher,
+        IsTeacher_Verified
     ]
 
     def get_queryset(self):

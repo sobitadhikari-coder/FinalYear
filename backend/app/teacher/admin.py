@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from .models import TeacherProfile, Availability, Subject,Class,Tution
+from .models import TeacherProfile, Availability, Subject,Class,Tution,TuitionApplication
 
 admin.site.register(Class)
 admin.site.register(Availability)
@@ -41,3 +41,68 @@ class TutionAdmin(admin.ModelAdmin):
         "price_per_month",
         "hours"
     ]
+
+from django.contrib import admin
+from django.urls import path
+from django.shortcuts import redirect
+from django.utils.html import format_html
+from .models import TuitionApplication
+
+
+
+@admin.register(TuitionApplication)
+class TuitionApplicationAdmin(admin.ModelAdmin):
+
+    list_display = [
+        "student",
+        "tution",
+        "message",
+        "status",
+        "applied_at",
+        # "action_buttons",
+    ]
+
+    # def get_urls(self):
+    #     urls = super().get_urls()
+
+    #     custom_urls = [
+    #         path(
+    #             "accept/<int:pk>/",
+    #             self.admin_site.admin_view(self.accept_application),
+    #             name="tuition_application_accept",
+    #         ),
+    #         path(
+    #             "reject/<int:pk>/",
+    #             self.admin_site.admin_view(self.reject_application),
+    #             name="tuition_application_reject",
+    #         ),
+    #     ]
+
+    #     return custom_urls + urls
+
+    # def accept_application(self, request, pk):
+    #     application = TuitionApplication.objects.get(pk=pk)
+    #     application.status = TuitionApplication.textChoices.ACCEPTED
+    #     application.save()
+
+    #     return redirect(request.META.get("HTTP_REFERER", "../"))
+
+    # def reject_application(self, request, pk):
+    #     application = TuitionApplication.objects.get(pk=pk)
+    #     application.status = TuitionApplication.textChoices.REJECTED
+    #     application.save()
+
+    #     return redirect(request.META.get("HTTP_REFERER", "../"))
+
+    # def action_buttons(self, obj):
+    #     if obj.status == TuitionApplication.textChoices.PENDING:
+    #         return format_html(
+    #             '<a class="button" href="accept/{}/"> Accept</a>&nbsp;'
+    #             '<a class="button" href="reject/{}/"> Reject</a>',
+    #             obj.id,
+    #             obj.id
+    #         )
+
+    #     return obj.status
+
+    # action_buttons.short_description = "Actions"

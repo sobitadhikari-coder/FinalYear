@@ -1,5 +1,9 @@
 from rest_framework import serializers
+
+from app.teacher.models import Tution
+from app.teacher.serializers import TutionSerializer
 from .models import StudentProfile
+from app.teacher.models import TuitionApplication
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
@@ -19,3 +23,18 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             'profile_picture',
             'interested_subjects'
         ]
+
+class TuitionApplicationSerializer(serializers.ModelSerializer):
+    tution_details = TutionSerializer(
+        source="tution",
+        read_only=True
+    )
+    class Meta:
+        model = TuitionApplication
+        fields = [
+            "id",
+            "tution",
+            "message",
+            "tution_details",
+        ]
+

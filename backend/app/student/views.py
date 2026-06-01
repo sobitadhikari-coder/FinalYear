@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from app.student.serializers import StudentProfileSerializer
-from rest_framework import generics 
+from app.student.serializers import StudentProfileSerializer, TuitionApplicationSerializer
 from .models import StudentProfile
 from rest_framework.permissions import IsAuthenticated
+from app.authenticate.permissions import IsStudent
 from rest_framework.generics import (
     CreateAPIView, RetrieveUpdateAPIView,ListAPIView,RetrieveAPIView
 )
@@ -20,8 +20,6 @@ class StudentProfileView(RetrieveUpdateAPIView):
         )
         return obj
 
-
-
 class TutionListView(ListAPIView):
     serializer_class = TutionSerializer
     permission_classes = [IsAuthenticated]
@@ -30,7 +28,6 @@ class TutionListView(ListAPIView):
     def get_queryset(self):
         return Tution.objects.all()
     
-
 class TutionDetailView(RetrieveAPIView):
     serializer_class = TutionSerializer
     permission_classes = [IsAuthenticated]
@@ -38,6 +35,40 @@ class TutionDetailView(RetrieveAPIView):
     queryset = Tution.objects.filter(
         teacher__is_verified=True
     )
+
+class ApplyTuitionView(CreateAPIView):
+    serializer_class = TuitionApplicationSerializer
+    permission_classes = [IsAuthenticated,IsStudent]
+
+    def perform_create(self, serializer):
+        student = StudentProfile.objects.get(
+            user=self.request.user
+        )
+        serializer.save(
+            student=student
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ListAPIView	GET	List multiple objects
 # RetrieveAPIView	GET	Retrieve a single object

@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-
 class Class(models.Model):
 
     name = models.CharField(
@@ -31,9 +30,8 @@ class TeacherProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     subjects = models.ManyToManyField(
         Subject,
-        related_name='teachers',
-        null=True,
-        blank=True
+        related_name='teachers'
+
     )
 
     bio = models.TextField(blank=True)
@@ -44,22 +42,12 @@ class TeacherProfile(models.Model):
 
     cv = models.FileField(
         upload_to='teacher_cv/',
-        null=True,
+        null=True, #this needs to be removed
         blank=True
     )
 
     is_verified = models.BooleanField(
         default=False
-    )
-
-    trial_start = models.DateTimeField(
-        null=True,
-        blank=True
-    )
-
-    trial_end = models.DateTimeField(
-        null=True,
-        blank=True
     )
 
     created_at = models.DateTimeField(
@@ -120,3 +108,36 @@ class Availability(models.Model):
 
     def __str__(self):
         return f"{self.teacher.user.username} - {self.day}"
+class TuitionApplication(models.Model):
+    class textChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        ACCEPTED = 'accepted', 'Accepted'
+        REJECTED = 'rejected', 'Rejected'
+        COMPLETED = 'completed', 'Completed'
+
+    student = models.ForeignKey(
+        'student.StudentProfile',
+        on_delete=models.CASCADE,
+        related_name="applications"
+    )
+
+    tution = models.ForeignKey(
+        Tution,
+        on_delete=models.CASCADE,
+        related_name="applications"
+    )
+
+    message = models.TextField(blank=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=textChoices.choices,
+        default=textChoices.PENDING
+    )
+
+    applied_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        unique_together = ("student", "tution")

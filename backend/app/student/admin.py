@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentProfile , StudentTution
+from .models import StudentProfile , StudentTution 
 # Register your models here.
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
@@ -23,3 +23,4 @@ class StudentTutionAdmin(admin.ModelAdmin):
         return obj.tution.hours
 
     get_hours.short_description = "Hours"
+
