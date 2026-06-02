@@ -1,5 +1,10 @@
 from django import forms
 from django.contrib import admin
+from django.urls import path
+from django.shortcuts import redirect
+from django.utils.html import format_html
+
+from app.student.models import StudentTution
 from .models import TeacherProfile, Availability, Subject,Class,Tution,TuitionApplication
 
 admin.site.register(Class)
@@ -42,13 +47,6 @@ class TutionAdmin(admin.ModelAdmin):
         "hours"
     ]
 
-from django.contrib import admin
-from django.urls import path
-from django.shortcuts import redirect
-from django.utils.html import format_html
-from .models import TuitionApplication
-
-
 
 @admin.register(TuitionApplication)
 class TuitionApplicationAdmin(admin.ModelAdmin):
@@ -61,6 +59,18 @@ class TuitionApplicationAdmin(admin.ModelAdmin):
         "applied_at",
         # "action_buttons",
     ]
+    def accept_application(self, request, pk):
+        application = TuitionApplication.objects.get(pk=pk)
+
+        application.status = TuitionApplication.textChoices.ACCEPTED
+        application.save()
+
+        StudentTution.objects.get_or_create(
+            student=application.student,
+            tution=application.tution
+        )
+
+        return redirect(request.META.get("HTTP_REFERER", "../"))
 
     # def get_urls(self):
     #     urls = super().get_urls()

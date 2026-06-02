@@ -41,9 +41,7 @@ class TeacherProfile(models.Model):
     )
 
     cv = models.FileField(
-        upload_to='teacher_cv/',
-        null=True, #this needs to be removed
-        blank=True
+        upload_to='teacher_cv/'
     )
 
     is_verified = models.BooleanField(

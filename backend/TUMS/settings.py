@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'app.authenticate.apps.AuthenticateConfig',
     'app.student',
     'app.teacher',
+    'app.teach_group',
     'rest_framework',
     'rest_framework_simplejwt',
     # 'app.booking',
