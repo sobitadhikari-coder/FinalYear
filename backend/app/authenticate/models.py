@@ -50,7 +50,6 @@ class CustomUser(AbstractUser):
     )
 
     full_name = models.CharField(max_length=75, blank=True)
-    bio = models.CharField(max_length=500, blank=True)
 
     profile_image = models.ImageField(
         upload_to='profile_images/',
