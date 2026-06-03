@@ -9,13 +9,12 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True) 
+    username = serializers.CharField(source='user.username',read_only=True)
+    email = serializers.EmailField(source='user.email',read_only=True)
     role = serializers.CharField(source='user.role', read_only=True)
-
-    availabilities = AvailabilitySerializer(
-        many=True,
-        read_only=True
+    subjects = serializers.PrimaryKeyRelatedField(
+        queryset=Subject.objects.all(),
+        many=True
     )
 
     class Meta:
@@ -32,8 +31,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
             'profile_picture',
             'cv',
             'is_verified',
-            'availabilities'
-        ]
+            ]
 
 class TutionSerializer(serializers.ModelSerializer):
 

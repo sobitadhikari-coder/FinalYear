@@ -9,6 +9,7 @@ from .models import TeacherProfile, Tution
 from .serializers import TeacherProfileSerializer, TutionSerializer
 from app.authenticate.permissions import IsTeacher,IsTeacher_Verified
 
+
 class TeacherProfileView(
     RetrieveUpdateAPIView
 ):
@@ -22,6 +23,7 @@ class TeacherProfileView(
         return TeacherProfile.objects.get(
             user=self.request.user
         )
+
 
 class TeacherListView(ListAPIView):
     permission_classes = [IsAuthenticated]
