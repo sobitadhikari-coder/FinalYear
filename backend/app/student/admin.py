@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentProfile , StudentTution 
+from .models import StudentProfile , StudentTuition 
 # Register your models here.
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
@@ -11,7 +11,7 @@ class StudentProfileAdmin(admin.ModelAdmin):
         "interested_subjects"
     ]
 
-@admin.register(StudentTution)
+@admin.register(StudentTuition)
 class StudentTuitionAdmin(admin.ModelAdmin):
     list_display = [
         "student",

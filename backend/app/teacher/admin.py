@@ -3,9 +3,11 @@ from django.contrib import admin
 from django.urls import path
 from django.shortcuts import redirect
 from django.utils.html import format_html
+from django.db import transaction
 
-from app.student.models import StudentTution
+from app.student.models import StudentTuition
 from .models import TeacherProfile, Availability, Subject,Class,Tuition,TuitionApplication
+from app.teach_group.models import TeachGroup, GroupMember
 
 admin.site.register(Class)
 admin.site.register(Availability)
@@ -59,21 +61,88 @@ class TuitionApplicationAdmin(admin.ModelAdmin):
         "message",
         "status",
         "applied_at",
-        # "action_buttons",
+        "action_buttons",
     ]
+
+    readonly_fields = [
+        "student",
+        "tuition",
+        "message",
+        "applied_at",
+    ]
+
+    def get_urls(self):
+        urls = super().get_urls()
+
+        custom_urls = [
+            path(
+                "accept/<int:pk>/",
+                self.admin_site.admin_view(self.accept_application),
+                name="tuition_application_accept",
+            ),
+            path(
+                "reject/<int:pk>/",
+                self.admin_site.admin_view(self.reject_application),
+                name="tuition_application_reject",
+            ),
+        ]
+
+        return custom_urls + urls
+
+    @transaction.atomic
     def accept_application(self, request, pk):
+
         application = TuitionApplication.objects.get(pk=pk)
 
         application.status = TuitionApplication.textChoices.ACCEPTED
         application.save()
 
-        StudentTution.objects.get_or_create(
+        # 1. Create enrollment
+        StudentTuition.objects.get_or_create(
             student=application.student,
             tuition=application.tuition
         )
 
+        # 2. Get or create default group
+        group, _ = TeachGroup.objects.get_or_create(
+            tuition=application.tuition,
+            defaults={
+                "name": f"{application.tuition.class_name.name} {application.tuition.subject.name} Group",
+                "description": f"Default group for {application.tuition.subject.name}",
+                "video_room_name": f"tuition-{application.tuition.id}-room",
+            }
+        )
+
+        # 3. Add student to group
+        GroupMember.objects.get_or_create(
+            group=group,
+            student=application.student
+        )
+
         return redirect(request.META.get("HTTP_REFERER", "../"))
 
+    def reject_application(self, request, pk):
+
+        application = TuitionApplication.objects.get(pk=pk)
+
+        application.status = TuitionApplication.textChoices.REJECTED
+        application.save()
+
+        return redirect(request.META.get("HTTP_REFERER", "../"))
+
+    def action_buttons(self, obj):
+
+        if obj.status == TuitionApplication.textChoices.PENDING:
+            return format_html(
+                '<a class="button" href="accept/{}/">Accept</a>&nbsp;'
+                '<a class="button" href="reject/{}/"> Reject</a>',
+                obj.id,
+                obj.id
+            )
+
+        return obj.status
+
+    action_buttons.short_description = "Actions"
     # def get_urls(self):
     #     urls = super().get_urls()
 

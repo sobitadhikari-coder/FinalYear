@@ -1,9 +1,13 @@
+import uuid
+
 from rest_framework.generics import (
     RetrieveUpdateAPIView,ListAPIView,CreateAPIView
 )
 from rest_framework.response import Response
 
 from rest_framework.permissions import IsAuthenticated
+
+from app.teach_group.models import TeachGroup
 
 from .models import TeacherProfile, Tuition
 from .serializers import TeacherProfileSerializer, TuitionSerializer
@@ -44,8 +48,17 @@ class CreateTuitionView(CreateAPIView):
             user=self.request.user
         )
 
-        serializer.save(
+    
+        tuition = serializer.save(
             teacher=teacher_profile
+        )
+
+        TeachGroup.objects.create(
+            tuition=tuition,
+            name = f"{tuition.class_name.name} {tuition.subject.name} Group #{tuition.id}",
+            description=f"Default group for {tuition.subject.name}",
+            video_room_name=f"room-{uuid.uuid4().hex}" 
+
         )
 
 

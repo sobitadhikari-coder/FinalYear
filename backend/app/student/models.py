@@ -23,7 +23,7 @@ class StudentProfile(models.Model):
     def __str__(self):
         return self.user.username
     
-class StudentTution(models.Model):
+class StudentTuition(models.Model):
     student = models.ForeignKey(
         'StudentProfile',
         on_delete=models.CASCADE,

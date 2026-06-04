@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Class, Subject, TeacherProfile, Availability, Tuition
+from .models import Class, Subject, TeacherProfile, Availability, Tuition,Tuition
 
 
 class AvailabilitySerializer(serializers.ModelSerializer):
@@ -51,7 +51,6 @@ class TuitionSerializer(serializers.ModelSerializer):
         read_only_fields = ['teacher']
 
     def create(self, validated_data):
-
         class_name = validated_data.pop('class_name')
         subject_name = validated_data.pop('subject')
 
@@ -59,7 +58,7 @@ class TuitionSerializer(serializers.ModelSerializer):
             name=class_name.strip()
         )
 
-        subject_obj, _ = Subject.objects.get_or_create( #get if it already exists otherwise create new
+        subject_obj, _ = Subject.objects.get_or_create(
             name=subject_name.strip()
         )
 
