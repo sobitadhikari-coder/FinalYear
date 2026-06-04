@@ -5,8 +5,8 @@ from rest_framework.response import Response
 
 from rest_framework.permissions import IsAuthenticated
 
-from .models import TeacherProfile, Tution
-from .serializers import TeacherProfileSerializer, TutionSerializer
+from .models import TeacherProfile, Tuition
+from .serializers import TeacherProfileSerializer, TuitionSerializer
 from app.authenticate.permissions import IsTeacher,IsTeacher_Verified
 
 
@@ -34,9 +34,9 @@ class TeacherListView(ListAPIView):
         is_verified=True
     )
 
-class CreateTutionView(CreateAPIView):
+class CreateTuitionView(CreateAPIView):
 
-    serializer_class = TutionSerializer
+    serializer_class = TuitionSerializer
     permission_classes = [IsAuthenticated, IsTeacher, IsTeacher_Verified]
 
     def perform_create(self, serializer):
@@ -50,7 +50,7 @@ class CreateTutionView(CreateAPIView):
 
 
 class MyTuitionListView(ListAPIView):
-    serializer_class = TutionSerializer
+    serializer_class = TuitionSerializer
     permission_classes = [
         IsAuthenticated,
         IsTeacher,
@@ -58,6 +58,6 @@ class MyTuitionListView(ListAPIView):
     ]
 
     def get_queryset(self):
-        return Tution.objects.filter(
+        return Tuition.objects.filter(
             teacher__user=self.request.user
         )

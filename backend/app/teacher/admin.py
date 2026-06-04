@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.utils.html import format_html
 
 from app.student.models import StudentTution
-from .models import TeacherProfile, Availability, Subject,Class,Tution,TuitionApplication
+from .models import TeacherProfile, Availability, Subject,Class,Tuition,TuitionApplication
 
 admin.site.register(Class)
 admin.site.register(Availability)
@@ -37,9 +37,10 @@ class TeacherProfileAdmin(admin.ModelAdmin):
             obj.user.save()
         super().save_model(request, obj, form, change)
 
-@admin.register(Tution)
+@admin.register(Tuition)
 class TutionAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "teacher",
         "subject",
         "class_name",
@@ -52,8 +53,9 @@ class TutionAdmin(admin.ModelAdmin):
 class TuitionApplicationAdmin(admin.ModelAdmin):
 
     list_display = [
+        "id",
         "student",
-        "tution",
+        "tuition",
         "message",
         "status",
         "applied_at",
@@ -67,7 +69,7 @@ class TuitionApplicationAdmin(admin.ModelAdmin):
 
         StudentTution.objects.get_or_create(
             student=application.student,
-            tution=application.tution
+            tuition=application.tuition
         )
 
         return redirect(request.META.get("HTTP_REFERER", "../"))

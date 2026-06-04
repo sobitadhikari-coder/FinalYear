@@ -12,15 +12,15 @@ class StudentProfileAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(StudentTution)
-class StudentTutionAdmin(admin.ModelAdmin):
+class StudentTuitionAdmin(admin.ModelAdmin):
     list_display = [
         "student",
-        "tution",
+        "tuition",
         "get_hours",
         "enrolled_at"
     ]
     def get_hours(self, obj):
-        return obj.tution.hours
+        return obj.tuition.hours
 
     get_hours.short_description = "Hours"
 

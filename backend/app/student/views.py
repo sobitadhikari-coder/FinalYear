@@ -6,8 +6,8 @@ from app.authenticate.permissions import IsStudent
 from rest_framework.generics import (
     CreateAPIView, RetrieveUpdateAPIView,ListAPIView,RetrieveAPIView
 )
-from app.teacher.models import Tution
-from app.teacher.serializers import TutionSerializer
+from app.teacher.models import Tuition
+from app.teacher.serializers import TuitionSerializer
 # Create your views here.
 
 class StudentProfileView(RetrieveUpdateAPIView):
@@ -20,19 +20,19 @@ class StudentProfileView(RetrieveUpdateAPIView):
         )
         return obj
 
-class TutionListView(ListAPIView):
-    serializer_class = TutionSerializer
+class TuitionListView(ListAPIView):
+    serializer_class = TuitionSerializer
     permission_classes = [IsAuthenticated]
 
 
     def get_queryset(self):
-        return Tution.objects.all()
+        return Tuition.objects.all()
     
-class TutionDetailView(RetrieveAPIView):
-    serializer_class = TutionSerializer
+class TuitionDetailView(RetrieveAPIView):
+    serializer_class = TuitionSerializer
     permission_classes = [IsAuthenticated]
 
-    queryset = Tution.objects.filter(
+    queryset = Tuition.objects.filter(
         teacher__is_verified=True
     )
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from app.teacher.models import Tution
-from app.teacher.serializers import TutionSerializer
+from app.teacher.models import Tuition
+from app.teacher.serializers import TuitionSerializer
 from .models import StudentProfile
 from app.teacher.models import TuitionApplication
 
@@ -25,16 +25,16 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         ]
 
 class TuitionApplicationSerializer(serializers.ModelSerializer):
-    tution_details = TutionSerializer(
-        source="tution",
+    tuition_details = TuitionSerializer(
+        source="tuition",
         read_only=True
     )
     class Meta:
         model = TuitionApplication
         fields = [
             "id",
-            "tution",
+            "tuition",
             "message",
-            "tution_details",
+            "tuition_details",
         ]
 

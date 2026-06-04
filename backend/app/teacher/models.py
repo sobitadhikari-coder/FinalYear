@@ -55,7 +55,7 @@ class TeacherProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-class Tution(models.Model):
+class Tuition(models.Model):
 
     teacher = models.ForeignKey(
         TeacherProfile,
@@ -106,6 +106,7 @@ class Availability(models.Model):
 
     def __str__(self):
         return f"{self.teacher.user.username} - {self.day}"
+    
 class TuitionApplication(models.Model):
     class textChoices(models.TextChoices):
         PENDING = 'pending', 'Pending'
@@ -119,14 +120,13 @@ class TuitionApplication(models.Model):
         related_name="applications"
     )
 
-    tution = models.ForeignKey(
-        Tution,
+    tuition = models.ForeignKey(
+        Tuition,
         on_delete=models.CASCADE,
         related_name="applications"
     )
 
     message = models.TextField(blank=True)
-
     status = models.CharField(
         max_length=20,
         choices=textChoices.choices,
@@ -138,4 +138,4 @@ class TuitionApplication(models.Model):
     )
 
     class Meta:
-        unique_together = ("student", "tution")
+        unique_together = ("student", "tuition")

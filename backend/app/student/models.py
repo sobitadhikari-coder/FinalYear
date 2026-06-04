@@ -30,8 +30,8 @@ class StudentTution(models.Model):
         related_name='enrollments'
     )
 
-    tution = models.ForeignKey(
-        'teacher.Tution',
+    tuition = models.ForeignKey(
+        'teacher.Tuition',
         on_delete=models.CASCADE,
         related_name='enrollments'
     )
@@ -39,9 +39,9 @@ class StudentTution(models.Model):
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('student', 'tution')
+        unique_together = ('student', 'tuition')
 
     def __str__(self):
-        return f"{self.student.user.username} enrolled in {self.tution.subject} - {self.tution.class_name}"
+        return f"{self.student.user.username} enrolled in {self.tuition.subject} - {self.tuition.class_name}"
     
 

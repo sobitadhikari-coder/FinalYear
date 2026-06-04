@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Class, Subject, TeacherProfile, Availability,Tution
+from .models import Class, Subject, TeacherProfile, Availability, Tuition
 
 
 class AvailabilitySerializer(serializers.ModelSerializer):
@@ -33,13 +33,13 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
             'is_verified',
             ]
 
-class TutionSerializer(serializers.ModelSerializer):
+class TuitionSerializer(serializers.ModelSerializer):
 
     class_name = serializers.CharField()
     subject = serializers.CharField()
 
     class Meta:
-        model = Tution
+        model = Tuition
         fields = [
             'id',
             'teacher',
@@ -63,7 +63,7 @@ class TutionSerializer(serializers.ModelSerializer):
             name=subject_name.strip()
         )
 
-        return Tution.objects.create(
+        return Tuition.objects.create(
             class_name=class_obj,
             subject=subject_obj,
             **validated_data
