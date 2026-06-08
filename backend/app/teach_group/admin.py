@@ -11,6 +11,7 @@ class GroupMemberInline(admin.TabularInline):
 class TeachGroupAdmin(admin.ModelAdmin):
 
     list_display = [
+        "id",
         "name",
         "tuition",
         "video_room_name",
@@ -33,6 +34,7 @@ class TeachGroupAdmin(admin.ModelAdmin):
 class GroupMemberAdmin(admin.ModelAdmin):
 
     list_display = [
+        "id",
         "group",
         "student",
         "added_at",

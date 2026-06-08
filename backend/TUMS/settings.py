@@ -65,18 +65,21 @@ AUTH_USER_MODEL = 'authenticate.CustomUser'
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'channels',
     'django.contrib.staticfiles',
     #added apps
     'app.authenticate.apps.AuthenticateConfig',
     'app.student',
     'app.teacher',
     'app.teach_group',
+    'app.chat',
     'rest_framework',
     'rest_framework_simplejwt',
     # 'app.booking',
@@ -134,7 +137,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'TUMS.wsgi.application'
+# WSGI_APPLICATION = 'TUMS.wsgi.application'
+ASGI_APPLICATION = 'TUMS.asgi.application'
 
 
 # Database
@@ -214,3 +218,14 @@ AXES_FAILURE_LIMIT=5
 AXES_COOLOFF_TIME=0.01# hours
 AXES_RESET_ON_SUCCESS=True
 ##
+
+
+##Configure Redis Channel Layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6369)],
+        },
+    },
+}
