@@ -77,3 +77,26 @@ class TuitionSerializer(serializers.ModelSerializer):
             "price_per_month": instance.price_per_month,
             "hours": instance.hours,
         }
+
+class TuitionUpdateSerializer(serializers.ModelSerializer):
+
+    class_name = serializers.SlugRelatedField(
+        queryset=Class.objects.all(),
+        slug_field='name'
+    )
+    subject = serializers.SlugRelatedField(
+        queryset=Subject.objects.all(),
+        slug_field='name'
+    )
+
+    class Meta:
+        model = Tuition
+        fields = [
+            'id',
+            'teacher',
+            'subject',
+            'class_name',
+            'price_per_month',
+            'hours',
+        ]
+        read_only_fields = ['id','teacher',]
