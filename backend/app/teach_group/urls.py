@@ -32,3 +32,33 @@ urlpatterns = [
         name="group-video-room"
     ),
 ]
+
+
+
+
+from .views import (
+    CreateGroupMeetingView,
+    GroupMeetingListView,
+    GroupMeetingVideoRoomView,
+)
+
+
+urlpatterns += [
+    path(
+        "<int:group_id>/meetings/create/",
+        CreateGroupMeetingView.as_view(),
+        name="create-group-meeting"
+    ),
+
+    path(
+        "<int:group_id>/meetings/",
+        GroupMeetingListView.as_view(),
+        name="group-meetings"
+    ),
+
+    path(
+        "meetings/<int:meeting_id>/video-room/",
+        GroupMeetingVideoRoomView.as_view(),
+        name="group-meeting-video-room"
+    ),
+]

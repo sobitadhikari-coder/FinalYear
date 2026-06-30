@@ -27,8 +27,11 @@ BASE_URL = env('BASE_URL', default='http://127.0.0.1:8000')
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=300),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    # for acess token and refresh token refresh
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -87,6 +90,8 @@ INSTALLED_APPS = [
     'auditlog',
     "django_filters",
     "axes",
+    "rest_framework_simplejwt.token_blacklist",
+
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
