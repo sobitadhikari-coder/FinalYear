@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import MyTuitionListView, TeacherProfileView, TeacherListView ,CreateTuitionView,TutionUpdateViewSet
+from .views import (MyTuitionListView,
+                     TeacherProfileView,
+                       TeacherListView ,
+                       CreateTuitionView,
+                       TutionUpdateViewSet,
+                       TutionApplicationUpdateViewSet,
+                        )
 # TeacherProfileUpdateView
 urlpatterns = [
     path('teach-profile/', TeacherProfileView.as_view(), name='teacher-profile'),
@@ -14,6 +20,6 @@ from rest_framework.routers import DefaultRouter
 router=DefaultRouter()
 
 router.register("tution/CRUD", TutionUpdateViewSet, basename="tution_update")
-
+router.register("tution-applications", TutionApplicationUpdateViewSet, basename="tution_application_update")
 
 urlpatterns += router.urls

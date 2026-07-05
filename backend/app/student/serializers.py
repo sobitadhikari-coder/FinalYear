@@ -37,4 +37,5 @@ class TuitionApplicationSerializer(serializers.ModelSerializer):
             "message",
             "tuition_details",
         ]
+        read_only_fields=["id",]
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Class, Subject, TeacherProfile, Availability, Tuition,Tuition
+from .models import Class, Subject, TeacherProfile, Availability, Tuition,Tuition ,TuitionApplication
 
 
 class AvailabilitySerializer(serializers.ModelSerializer):
@@ -100,3 +100,57 @@ class TuitionUpdateSerializer(serializers.ModelSerializer):
             'hours',
         ]
         read_only_fields = ['id','teacher',]
+
+class TutionApplicationCRUDSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(
+        source="student.user.username",
+        read_only=True
+    )
+
+    subject = serializers.CharField(
+        source="tuition.subject.name",
+        read_only=True
+    )
+
+    class_name = serializers.CharField(
+        source="tuition.class_name.name",
+        read_only=True
+    )
+
+    price_per_month = serializers.IntegerField(
+        source="tuition.price_per_month",
+        read_only=True
+    )
+
+    hours = serializers.IntegerField(
+        source="tuition.hours",
+        read_only=True
+    )
+
+    class Meta:
+        model = TuitionApplication
+        fields = [
+            "id",
+            "student",
+            "student_name",
+            "tuition",
+            "subject",
+            "class_name",
+            "price_per_month",
+            "hours",
+            "message",
+            "status",
+            "applied_at",
+        ]
+        read_only_fields = [
+            "id",
+            "student",
+            "student_name",
+            "tuition",
+            "subject",
+            "class_name",
+            "price_per_month",
+            "hours",
+            "message",
+            "applied_at",
+        ]
