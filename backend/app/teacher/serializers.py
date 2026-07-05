@@ -8,30 +8,102 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = Availability
         fields = '__all__'
 
+
+
 class TeacherProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username',read_only=True)
-    email = serializers.EmailField(source='user.email',read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
     role = serializers.CharField(source='user.role', read_only=True)
-    subjects = serializers.PrimaryKeyRelatedField(
-        queryset=Subject.objects.all(),
-        many=True
+
+    subjects = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True
     )
+
+    subject_details = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = TeacherProfile
-
         fields = [
-            'role',
-            'username', 
-            'email',
             'id',
+            'role',
+            'username',
+            'email',
             'bio',
             'subjects',
+            'subject_details',
             'experience',
             'profile_picture',
             'cv',
             'is_verified',
-            ]
+        ]
+
+    def get_subject_details(self, obj):
+        return [
+            {"id": s.id, "name": s.name}
+            for s in obj.subjects.all()
+        ]
+
+    def _handle_subjects(self, teacher, subjects_data):
+        subject_objs = []
+
+        for name in subjects_data:
+            name = name.strip().lower()
+
+            subject, _ = Subject.objects.get_or_create(
+                name__iexact=name,
+                defaults={"name": name}
+            )
+
+            subject_objs.append(subject)
+
+        teacher.subjects.set(subject_objs)
+
+    def create(self, validated_data):
+        subjects_data = validated_data.pop("subjects", [])
+
+        teacher = TeacherProfile.objects.create(**validated_data)
+
+        self._handle_subjects(teacher, subjects_data)
+
+        return teacher
+
+    def update(self, instance, validated_data):
+        subjects_data = validated_data.pop("subjects", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        if subjects_data is not None:
+            self._handle_subjects(instance, subjects_data)
+
+        return instance
+# class TeacherProfileSerializer(serializers.ModelSerializer):
+#     username = serializers.CharField(source='user.username',read_only=True)
+#     email = serializers.EmailField(source='user.email',read_only=True)
+#     role = serializers.CharField(source='user.role', read_only=True)
+#     subjects = serializers.PrimaryKeyRelatedField(
+#         queryset=Subject.objects.all(),
+#         many=True
+#     )
+
+#     class Meta:
+#         model = TeacherProfile
+
+#         fields = [
+#             'role',
+#             'username', 
+#             'email',
+#             'id',
+#             'bio',
+#             'subjects',
+#             'experience',
+#             'profile_picture',
+#             'cv',
+#             'is_verified',
+#             ]
 
 class TuitionSerializer(serializers.ModelSerializer):
 
