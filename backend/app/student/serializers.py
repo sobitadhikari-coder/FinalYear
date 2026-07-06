@@ -29,6 +29,7 @@ class TuitionApplicationSerializer(serializers.ModelSerializer):
         source="tuition",
         read_only=True
     )
+
     class Meta:
         model = TuitionApplication
         fields = [
@@ -37,5 +38,21 @@ class TuitionApplicationSerializer(serializers.ModelSerializer):
             "message",
             "tuition_details",
         ]
-        read_only_fields=["id",]
+        read_only_fields = ["id"]
+
+    def validate(self, attrs):
+        student = self.context["request"].user.student_profile
+        tuition = attrs["tuition"]
+
+        if TuitionApplication.objects.filter(
+            student=student,
+            tuition=tuition
+        ).exists():
+            raise serializers.ValidationError(
+                {
+                    "tuition": "You have already applied for this tuition."
+                }
+            )
+
+        return attrs
 

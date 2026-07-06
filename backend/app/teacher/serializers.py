@@ -8,8 +8,6 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = Availability
         fields = '__all__'
 
-
-
 class TeacherProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
@@ -80,6 +78,11 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
             self._handle_subjects(instance, subjects_data)
 
         return instance
+    
+
+
+
+
 # class TeacherProfileSerializer(serializers.ModelSerializer):
 #     username = serializers.CharField(source='user.username',read_only=True)
 #     email = serializers.EmailField(source='user.email',read_only=True)

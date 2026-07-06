@@ -2,6 +2,7 @@ import uuid
 from rest_framework.generics import (
     RetrieveUpdateAPIView,ListAPIView,CreateAPIView
 )
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +13,8 @@ from .models import TeacherProfile, Tuition ,TuitionApplication
 from .serializers import TeacherProfileSerializer, TuitionSerializer,TuitionUpdateSerializer,TutionApplicationCRUDSerializer
 from app.authenticate.permissions import IsTeacher,IsTeacher_Verified
 from rest_framework.permissions import IsAuthenticated
+from .services.application_service import ApplicationService
+
 
 
 class TeacherProfileView(
@@ -181,102 +184,90 @@ class TutionApplicationUpdateViewSet(ModelViewSet):
     permission_classes = [
         IsAuthenticated,
         IsTeacher,
-        IsTeacher_Verified
+        IsTeacher_Verified,
     ]
     parser_classes = [JSONParser]
 
     http_method_names = [
         "get",
-        "patch",
+        "post",
         "head",
-        "options"
+        "options",
     ]
+
     def get_queryset(self):
         return (
             TuitionApplication.objects
             .filter(
                 tuition__teacher=self.request.user.teacher_profile
             )
-            .select_related("student", "tuition")
+            .select_related(
+                "student",
+                "student__user",
+                "tuition",
+                "tuition__subject",
+                "tuition__class_name",
+            )
             .order_by("-id")
         )
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
+    @action(detail=True, methods=["post"])
+    def accept(self, request, pk=None):
+        application = self.get_object()
 
-        instance = self.get_object()
+        ApplicationService.accept(application)
 
-        serializer = self.get_serializer(
-            instance,
-            data=request.data,
-            partial=partial
-        )
-
-        if not serializer.is_valid():
-            return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST,
-                    "message": "Tuition Application update failed.",
-                    "errors": serializer.errors
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer.save()
+        serializer = self.get_serializer(application)
 
         return Response(
             {
                 "status": status.HTTP_200_OK,
-                "message": "Tuition Application updated successfully.",
-                "data": serializer.data
-            },
-            status=status.HTTP_200_OK
+                "message": "Application accepted successfully.",
+                "data": serializer.data,
+            }
         )
 
-    def partial_update(self, request, *args, **kwargs):
-        kwargs["partial"] = True
-        return self.update(request, *args, **kwargs)
+    @action(detail=True, methods=["post"])
+    def reject(self, request, pk=None):
+        application = self.get_object()
 
-    # def destroy(self, request, *args, **kwargs):
-    #     instance = self.get_object()
+        ApplicationService.reject(application)
 
-    #     instance.delete()
+        serializer = self.get_serializer(application)
 
-    #     return Response(
-    #         {
-    #             "status": status.HTTP_200_OK,
-    #             "message": "Tuition deleted successfully."
-    #         },
-    #         status=status.HTTP_200_OK
-    #     )
+        return Response(
+            {
+                "status": status.HTTP_200_OK,
+                "message": "Application rejected successfully.",
+                "data": serializer.data,
+            }
+        )
 
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        application = self.get_object()
 
-    #     serializer = self.get_serializer(
-    #         queryset,
-    #         many=True
-    #     )
+        ApplicationService.complete(application)
 
-    #     return Response(
-    #         {
-    #             "status": status.HTTP_200_OK,
-    #             "message": "Tuition list fetched successfully.",
-    #             "data": serializer.data
-    #         },
-    #         status=status.HTTP_200_OK
-    #     )
+        serializer = self.get_serializer(application)
+
+        return Response(
+            {
+                "status": status.HTTP_200_OK,
+                "message": "Application completed successfully.",
+                "data": serializer.data,
+            }
+        )
 
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
+        application = self.get_object()
 
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(application)
 
         return Response(
             {
                 "status": status.HTTP_200_OK,
-                "message": "Tuition details fetched successfully.",
-                "data": serializer.data
-            },
-            status=status.HTTP_200_OK
+                "message": "Tuition application details fetched successfully.",
+                "data": serializer.data,
+            }
         )
