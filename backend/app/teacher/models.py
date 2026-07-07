@@ -57,11 +57,13 @@ class TeacherProfile(models.Model):
 
 class Tuition(models.Model):
 
+
     teacher = models.ForeignKey(
         TeacherProfile,
         on_delete=models.CASCADE,
         related_name='tutions'
     )
+
 
     # student = models.ForeignKey(
     #     settings.AUTH_USER_MODEL,

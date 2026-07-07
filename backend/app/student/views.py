@@ -6,7 +6,7 @@ from app.authenticate.permissions import IsStudent
 from rest_framework.generics import (
     CreateAPIView, RetrieveUpdateAPIView,ListAPIView,RetrieveAPIView
 )
-from app.teacher.models import Tuition
+from app.teacher.models import Tuition , TuitionApplication
 from app.teacher.serializers import TuitionSerializer
 # Create your views here.
 
@@ -24,17 +24,37 @@ class TuitionListView(ListAPIView):
     serializer_class = TuitionSerializer
     permission_classes = [IsAuthenticated]
 
-
     def get_queryset(self):
-        return Tuition.objects.all()
+        queryset = Tuition.objects.filter(
+            teacher__is_verified=True
+        )
+
+        if hasattr(self.request.user, "student_profile"):
+            applied_ids = TuitionApplication.objects.filter(
+                student=self.request.user.student_profile
+            ).values_list("tuition_id", flat=True)
+
+            queryset = queryset.exclude(id__in=applied_ids)
+
+        return queryset
     
 class TuitionDetailView(RetrieveAPIView):
     serializer_class = TuitionSerializer
     permission_classes = [IsAuthenticated]
 
-    queryset = Tuition.objects.filter(
-        teacher__is_verified=True
-    )
+    def get_queryset(self):
+        queryset = Tuition.objects.filter(
+            teacher__is_verified=True
+        )
+
+        if hasattr(self.request.user, "student_profile"):
+            applied_ids = TuitionApplication.objects.filter(
+                student=self.request.user.student_profile
+            ).values_list("tuition_id", flat=True)
+
+            queryset = queryset.exclude(id__in=applied_ids)
+
+        return queryset
 
 class ApplyTuitionView(CreateAPIView):
     serializer_class = TuitionApplicationSerializer
@@ -47,6 +67,30 @@ class ApplyTuitionView(CreateAPIView):
         serializer.save(
             student=student
         )
+
+class MyTuitionApplicationsView(ListAPIView):
+    serializer_class = TuitionApplicationSerializer
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get_queryset(self):
+        queryset = (
+            TuitionApplication.objects
+            .filter(student=self.request.user.student_profile)
+            .select_related(
+                "tuition",
+                "tuition__teacher",
+                "tuition__subject",
+                "tuition__class_name",
+            )
+            .order_by("-applied_at")
+        )
+
+        status = self.request.query_params.get("status")
+
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset
 
 
 
