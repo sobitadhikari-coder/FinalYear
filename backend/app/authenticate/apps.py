@@ -8,4 +8,5 @@ class AuthenticateConfig(AppConfig):
 
     def ready(self):
         import app.authenticate.signals
+        import app.authenticate.audit
     

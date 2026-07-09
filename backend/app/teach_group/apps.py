@@ -6,3 +6,4 @@ class TeachGroupConfig(AppConfig):
 
     def ready(self):
         import app.teach_group.signals
+        import app.teach_group.audit
