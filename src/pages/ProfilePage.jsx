@@ -163,73 +163,108 @@ const ProfilePage = () => {
     } catch { setError('Update failed.'); }
   };
 
-  if (loading) return <div className="text-center py-10">Loading profile...</div>;
-  if (!sharedProfile) return <div className="text-center py-10 text-red-500">{error || 'Profile not available.'}</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 pt-16 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-500">Loading profile...</p>
+      </div>
+    </div>
+  );
+
+  if (!sharedProfile) return (
+    <div className="min-h-screen bg-gray-50 pt-16 flex items-center justify-center">
+      <div className="text-center text-red-500 font-medium">{error || 'Profile not available.'}</div>
+    </div>
+  );
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6 pt-16">
-      <h1 className="text-2xl font-bold">My Profile</h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto px-4 py-8 pt-24 space-y-8">
+        {/* Page header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900">My Profile</h1>
+            <p className="text-gray-500 mt-1">Manage your personal information and role settings.</p>
+          </div>
+          {role === 'teacher' && isVerified && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-semibold border border-green-200 self-start sm:self-auto">
+              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+              Verified Teacher
+            </span>
+          )}
+        </div>
 
-      {role === 'teacher' && (
-        editingTeacher ? (
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Edit Teacher Profile</h3>
-            <form onSubmit={handleSubmitTeacher} className="flex flex-col gap-4">
-              <Input label="Bio" value={formTeacher.bio} onChange={e => setFormTeacher({...formTeacher, bio: e.target.value})} />
-              <Input label="Subjects (comma separated)" value={formTeacher.subjects} onChange={e => setFormTeacher({...formTeacher, subjects: e.target.value})} />
-              <div className="flex gap-2">
+        {/* Role‑specific section */}
+        {role === 'teacher' && (
+          editingTeacher ? (
+            <Card className="shadow-xl border-0">
+              <h3 className="text-lg font-bold text-gray-800 mb-5">Edit Teacher Profile</h3>
+              <form onSubmit={handleSubmitTeacher} className="flex flex-col gap-5">
+                <Input label="Bio" value={formTeacher.bio} onChange={e => setFormTeacher({...formTeacher, bio: e.target.value})} />
+                <Input label="Subjects (comma separated)" value={formTeacher.subjects} onChange={e => setFormTeacher({...formTeacher, subjects: e.target.value})} />
+                <div className="flex gap-3">
+                  <Button type="submit">Save</Button>
+                  <Button type="button" onClick={() => setEditingTeacher(false)} className="bg-gray-500 hover:bg-gray-600 active:bg-gray-700 focus:ring-gray-200">Cancel</Button>
+                </div>
+              </form>
+            </Card>
+          ) : (
+            <TeacherProfileSection
+              teacherProfile={teacherProfile}
+              isVerified={isVerified}
+              onUpdate={handleEditTeacher}
+              error={teacherError}
+            />
+          )
+        )}
+
+        {role === 'student' && (
+          editingStudent ? (
+            <Card className="shadow-xl border-0">
+              <h3 className="text-lg font-bold text-gray-800 mb-5">Edit Student Profile</h3>
+              <form onSubmit={handleSubmitStudent} className="flex flex-col gap-5">
+                <Input label="Grade" value={formStudent.grade} onChange={e => setFormStudent({...formStudent, grade: e.target.value})} required />
+                <Input label="Interested Subjects" value={formStudent.interested_subjects} onChange={e => setFormStudent({...formStudent, interested_subjects: e.target.value})} />
+                <div className="flex gap-3">
+                  <Button type="submit">Save</Button>
+                  <Button type="button" onClick={() => setEditingStudent(false)} className="bg-gray-500 hover:bg-gray-600 active:bg-gray-700 focus:ring-gray-200">Cancel</Button>
+                </div>
+              </form>
+            </Card>
+          ) : (
+            <StudentProfileSection studentProfile={studentProfile} onUpdate={handleEditStudent} />
+          )
+        )}
+
+        {/* General user info section */}
+        {editingUser ? (
+          <Card className="shadow-xl border-0">
+            <h3 className="text-lg font-bold text-gray-800 mb-5">Edit General Info</h3>
+            <form onSubmit={handleSubmitUser} className="flex flex-col gap-5">
+              <Input label="Username" value={formUser.username} onChange={e => setFormUser({...formUser, username: e.target.value})} required />
+              <Input label="Email" type="email" value={formUser.email} onChange={e => setFormUser({...formUser, email: e.target.value})} required />
+              <Input label="Phone Number" value={formUser.phone_number} onChange={e => setFormUser({...formUser, phone_number: e.target.value})} />
+              <Input label="Full Name" value={formUser.full_name} onChange={e => setFormUser({...formUser, full_name: e.target.value})} />
+              <div className="flex gap-3">
                 <Button type="submit">Save</Button>
-                <Button type="button" onClick={() => setEditingTeacher(false)} className="bg-gray-500 hover:bg-gray-600">Cancel</Button>
+                <Button type="button" onClick={() => setEditingUser(false)} className="bg-gray-500 hover:bg-gray-600 active:bg-gray-700 focus:ring-gray-200">Cancel</Button>
               </div>
             </form>
           </Card>
         ) : (
-          <TeacherProfileSection
-            teacherProfile={teacherProfile}
-            isVerified={isVerified}
-            onUpdate={handleEditTeacher}
-            error={teacherError}
-          />
-        )
-      )}
+          <UserInfoSection user={sharedProfile} onUpdate={handleEditUser} />
+        )}
 
-      {role === 'student' && (
-        editingStudent ? (
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Edit Student Profile</h3>
-            <form onSubmit={handleSubmitStudent} className="flex flex-col gap-4">
-              <Input label="Grade" value={formStudent.grade} onChange={e => setFormStudent({...formStudent, grade: e.target.value})} required />
-              <Input label="Interested Subjects" value={formStudent.interested_subjects} onChange={e => setFormStudent({...formStudent, interested_subjects: e.target.value})} />
-              <div className="flex gap-2">
-                <Button type="submit">Save</Button>
-                <Button type="button" onClick={() => setEditingStudent(false)} className="bg-gray-500 hover:bg-gray-600">Cancel</Button>
-              </div>
-            </form>
-          </Card>
-        ) : (
-          <StudentProfileSection studentProfile={studentProfile} onUpdate={handleEditStudent} />
-        )
-      )}
-
-      {editingUser ? (
-        <Card>
-          <h3 className="text-lg font-semibold mb-4">Edit General Info</h3>
-          <form onSubmit={handleSubmitUser} className="flex flex-col gap-4">
-            <Input label="Username" value={formUser.username} onChange={e => setFormUser({...formUser, username: e.target.value})} required />
-            <Input label="Email" type="email" value={formUser.email} onChange={e => setFormUser({...formUser, email: e.target.value})} required />
-            <Input label="Phone Number" value={formUser.phone_number} onChange={e => setFormUser({...formUser, phone_number: e.target.value})} />
-            <Input label="Full Name" value={formUser.full_name} onChange={e => setFormUser({...formUser, full_name: e.target.value})} />
-            <div className="flex gap-2">
-              <Button type="submit">Save</Button>
-              <Button type="button" onClick={() => setEditingUser(false)} className="bg-gray-500 hover:bg-gray-600">Cancel</Button>
-            </div>
-          </form>
-        </Card>
-      ) : (
-        <UserInfoSection user={sharedProfile} onUpdate={handleEditUser} />
-      )}
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-4 rounded-2xl border border-red-200">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

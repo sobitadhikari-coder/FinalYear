@@ -42,7 +42,6 @@ const TeacherTuitionsPage = () => {
         ]);
         if (!cancelled) {
           setTuitions(tuitionsData);
-          // Extract subject names from teacher profile
           const names = teacherData.subject_details
             ? teacherData.subject_details.map((s) => s.name)
             : teacherData.subjects || [];
@@ -113,80 +112,122 @@ const TeacherTuitionsPage = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10 pt-16">Loading tuitions...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 pt-16 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading tuitions...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6 pt-16">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">My Tuitions</h1>
-        <Button onClick={() => setShowCreateForm(true)}>Create Tuition</Button>
-      </div>
-
-      {error && <p className="text-red-500">{error}</p>}
-
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
-              onClick={() => setShowCreateForm(false)}
-            >
-              ✕
-            </button>
-            <TuitionForm onSubmit={handleCreate} subjects={subjects} />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto px-4 py-8 pt-24 space-y-6">
+        {/* Page header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900">My Tuitions</h1>
+            <p className="text-gray-500 mt-1">Create and manage your tuition listings.</p>
           </div>
+          <Button onClick={() => setShowCreateForm(true)} size="lg">
+            Create Tuition
+          </Button>
         </div>
-      )}
 
-      {editingTuition && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
-              onClick={() => setEditingTuition(null)}
-            >
-              ✕
-            </button>
-            <TuitionForm
-              initialData={editingTuition}
-              onSubmit={handleUpdate}
-              subjects={subjects}
-            />
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-4 rounded-2xl border border-red-200">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
           </div>
-        </div>
-      )}
+        )}
 
-      {deletingId && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <p className="mb-4">Are you sure you want to delete this tuition?</p>
-            <div className="flex gap-2 justify-end">
-              <Button onClick={() => setDeletingId(null)} className="bg-gray-500 hover:bg-gray-600">
-                Cancel
-              </Button>
-              <Button onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
-                Delete
-              </Button>
+        {/* Tuition list */}
+        {tuitions.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <p className="text-gray-500 font-medium">No tuitions created yet</p>
+            <p className="text-gray-400 text-sm mt-1">Click &ldquo;Create Tuition&rdquo; to get started.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {tuitions.map((tuition) => (
+              <TuitionCard
+                key={tuition.id}
+                tuition={tuition}
+                onEdit={handleEdit}
+                onDelete={confirmDelete}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Create form modal */}
+        {showCreateForm && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-20 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-fade-in">
+              <button
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowCreateForm(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <TuitionForm onSubmit={handleCreate} subjects={subjects} />
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {tuitions.length === 0 ? (
-        <p className="text-gray-500 text-center">No tuitions created yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tuitions.map((tuition) => (
-            <TuitionCard
-              key={tuition.id}
-              tuition={tuition}
-              onEdit={handleEdit}
-              onDelete={confirmDelete}
-            />
-          ))}
-        </div>
-      )}
+        {/* Edit form modal */}
+        {editingTuition && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-20 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-fade-in">
+              <button
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setEditingTuition(null)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <TuitionForm
+                initialData={editingTuition}
+                onSubmit={handleUpdate}
+                subjects={subjects}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Delete confirmation modal */}
+        {deletingId && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-20 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center animate-fade-in">
+              <div className="w-14 h-14 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-2">Delete Tuition</h3>
+              <p className="text-gray-500 mb-6">Are you sure you want to delete this tuition? This action cannot be undone.</p>
+              <div className="flex gap-3 justify-center">
+                <Button onClick={() => setDeletingId(null)} className="bg-gray-500 hover:bg-gray-600 active:bg-gray-700 focus:ring-gray-200">
+                  Cancel
+                </Button>
+                <Button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-200">
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

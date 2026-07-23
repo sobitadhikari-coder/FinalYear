@@ -14,7 +14,6 @@ import TuitionDetailPage from './pages/TuitionDetailPage';
 import TeacherApplicationsPage from './pages/TeacherApplicationsPage';
 import StudentApplicationsPage from './pages/StudentApplicationsPage';
 import GroupsPage from './pages/GroupsPage';
-import GroupDetailPage from './pages/GroupDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { ROUTES } from './utils/constants';
 
@@ -102,7 +101,7 @@ const App = () => {
           path={ROUTES.GROUP_DETAIL}
           element={
             <ProtectedRoute>
-              <GroupDetailPage />
+              <GroupsPage key={window.location.pathname} />
             </ProtectedRoute>
           }
         />
